@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="./output.css">
+</head>
+<body class="font-mono bg-cyan-100">
+    <header class="p-4 bg-slate-600 text-white">
+        <h1 class="flex justify-center text-xl">WEATHER DASHBOARD</h1>
+    </header>
+    <aside class="border-2 flex flex-row flex-wrap m-0">
+        <h1 class="m-3">Enter A City Name</h1>
+        <input placeholder="E.G., India, NewYork" class="ml-3 border-2" type="text" id="city">
+        <button class="border-2 grow text-white bg-slate-600" onclick="getCity()">Search</button>
+        <button id="Location" onclick="getLocation()" class="border-2 p-3 ml-0 grow text-white bg-slate-600">Use Current Location</button>
+    </aside>
+    <main >
+        <section class="flex flex-col">
+            <div id="mainInfo" class="flex grow bg-rose-200">
+            </div>
+            <div id="forecast" class="flex flex-row justify-center  flex-wrap mt-1 bg-rose-200">
+            </div>
+        </section>
+    </main>
+    <script>
+        let city;
+        const apiKey = "95e2a29c54e523bf5e82dd34efc257a7";
+        function getCity()
+        {
+            city = document.querySelector('#city').value;
+            if(city === "")
+            {
+                console.log("enter something");
+            }
+            else
+            {
+
+                console.log(city);
+                getdata(city);
+            }
+        }
+
+        async function getdata(city)
+        {
+            try
+            {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);    
+                const data = await response.json();
+                appendInfo(data);
+
+                const forecastResponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+                const forecastData = await forecastResponse.json();
+                appendForecast(forecastData);
+            }
+                catch(error)
+            {
+                console.log(`error - ${error}`);
+                document.getElementById('mainInfo').innerHTML = `City Name cant be found`;
+                document.getElementById('forecast').innerHTML = '';
+            }
+           
+        }
+        
+
+        function appendInfo(data)
+        {
+            let icon = '';
+            switch (data.weather[0].main) {
+                case 'Clear':
+                    icon = '<img class="w-28 m-2 float-right" src="./images/clear.png">'
+                case 'Clouds':
+                    icon = '<img class="w-28 m-2 float-right"  src="./images/cloudy.png">';
+                    break;
+                case 'Rain':
+                    icon = '<img class="w-28 m-2 float-right" src="./images/rain.png">';
+                    break;
+                case 'Snow':
+                    icon = '<img class="w-28 m-2 float-right" src="./images/snow.png">';
+                    break;
+                default:
+                    icon = '<img class="w-28 m-2 float-right" src="./images/default.png">';
+                    break;
+            }
+            let result = document.querySelector('#mainInfo')
+            result.innerHTML = `
+            <div class="flex flex-col grow p-3">
+                <h1 class="text-2xl">${data.name}</h1>
+                <p>${data.weather[0].description}</p>
+                <p><strong>Temperature:</strong> ${data.main.temp} °C</p>
+                <p><strong>Weather:</strong> ${data.weather[0].description}<p>
+                <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+                <p><strong>Wind Speed:</strong> ${data.wind.speed} m/s</p>
+            </div>
+            <div>
+                ${icon}
+            </div>`
+            
+        } 
+        
+        function appendForecast(data) {
+        let forecastHTML = '';
+        for (let i = 0; i < data.list.length; i += 8) 
+        {
+            let day = data.list[i];
+            let icon = '';
+            switch (day.weather[0].main) {
+                case 'Clear':
+                    icon = '<img class="w-24 m-2" src="./images/clear.png">';
+                    break;
+                case 'Clouds':
+                    icon = '<img class="w-24 m-2" src="./images/cloudy.png">';
+                    break;
+                case 'Rain':
+                    icon = '<img class="w-24 m-2" src="./images/rain.png">';
+                    break;
+                case 'Snow':
+                    icon = '<img class="w-24 m-2" src="./images/snow.png">';
+                    break;
+                default:
+                    icon = '<img class="w-24 m-2" src="./images/default.png">';
+                    break;
+            }
+            forecastHTML += `
+            <div class="flex flex-col p-3 ">
+                <h2 class="text-xl">${new Date(day.dt * 1000).toLocaleDateString()}</h2>
+                <p>${day.weather[0].description}</p>
+                <p><strong>Temperature:</strong> ${day.main.temp} °C</p>
+                <p><strong>Humidity:</strong> ${day.main.humidity}%</p>
+                <p><strong>Wind Speed:</strong> ${day.wind.speed} m/s</p>
+                ${icon}
+            </div>
+            `;
+        }
+        let forecast = document.querySelector('#forecast');
+        forecast.innerHTML = forecastHTML;
+
+    } 
+    </script>
+</body>
+</html>
