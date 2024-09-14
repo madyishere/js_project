@@ -137,6 +137,56 @@
         forecast.innerHTML = forecastHTML;
 
     } 
+
+    async function getLocation() 
+    {
+        try {
+        const position = await getCurrentPosition();
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;  
+        console.log(latitude);
+        console.log(longitude);  
+        await reverseGeocode(latitude, longitude);
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
+
+    }
+
+    function getCurrentPosition()
+    {
+        return new Promise((resolve, reject) => {
+            if(navigator.geolocation)
+            {
+                navigator.geolocation.getCurrentPosition(resolve,reject);
+            }
+            else
+            {
+                reject(new Error("geolocation is not supported"));
+            }
+        });
+    }
+
+    async function reverseGeocode(latitude, longitude)
+    {
+        const apiKey = "95e2a29c54e523bf5e82dd34efc257a7";
+        const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`);
+        const data = await response.json();
+
+        if(data.length > 0)
+        {
+            const location = data[0];
+            const state = location.state || "State info not available";
+            const country = location.country;
+
+            document.querySelector("#city").value = state;
+        } else {
+            document.getElementById("#mainInfo").innerHTML += `<br>Location information not found.`;
+        }
+    }
+    
     </script>
-</body>
+</body> 
 </html>
