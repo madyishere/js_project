@@ -55,6 +55,8 @@
             }
         }
 
+
+        //get city from the api itself
         async function getdata(city)
         {
             try
@@ -84,6 +86,7 @@
 
         
 
+        //appends weather info to the div tag above in the body section
         function appendInfo(data)
         {
             let icon = '';
@@ -119,8 +122,11 @@
             
         } 
         
+        //appends the 5 day weather forcast
         function appendForecast(data) {
         let forecastHTML = '';
+
+        //in this loop the i is incrementing by 8 because in every three hour we geeting a time update so 3 * 8 makes 24 so a day will come after 8 iterations
         for (let i = 0; i < data.list.length; i += 8) 
         {
             let day = data.list[i];
@@ -189,6 +195,7 @@
         });
     }
 
+    //this function will give me the state or country based on longitude and latitude
     async function reverseGeocode(latitude, longitude)
     {
         const apiKey = "95e2a29c54e523bf5e82dd34efc257a7";
