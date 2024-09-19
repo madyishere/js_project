@@ -18,6 +18,11 @@
     </aside>
     <main >
         <section class="flex flex-col">
+            <div>
+                <p class="inline">recent searched cities</p>
+                <select onchange="updateCityFromDropdown()" id="recentCities">
+                </select>
+            </div>
             <div id="mainInfo" class="flex grow bg-rose-200">
             </div>
             <div id="forecast" class="flex flex-row justify-center  flex-wrap mt-1 bg-rose-200">
@@ -36,9 +41,17 @@
             }
             else
             {
-
-                console.log(city);
                 getdata(city);
+                const userinput = document.querySelector("#city").value
+                localStorage.setItem(userinput,userinput);
+                const dropcity = document.querySelector("#recentCities");
+                for (let i = 0; i < localStorage.length; i++) {
+                    const option = document.createElement('option');
+                    const key = localStorage.key(i);
+                    option.innerHTML = key;
+                    dropcity.appendChild(option);
+                }
+                
             }
         }
 
@@ -62,6 +75,13 @@
             }
            
         }
+
+        function updateCityFromDropdown() 
+        {
+            const selectedCity = document.querySelector("#recentCities").value;
+            document.querySelector("#city").value = selectedCity;
+        }
+
         
 
         function appendInfo(data)
@@ -185,8 +205,9 @@
         } else {
             document.getElementById("#mainInfo").innerHTML += `<br>Location information not found.`;
         }
-    }
-    
+        
+        
+    } 
     </script>
 </body> 
 </html>
